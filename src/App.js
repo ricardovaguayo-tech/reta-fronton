@@ -1,5 +1,4 @@
 
-
 import { useState, useEffect } from "react";
 
 const Box = ({ children, color }) => (
@@ -23,6 +22,7 @@ const Button = (props) => (
 );
 
 export default function App() {
+  const [showList, setShowList] = useState(false);
   const [players, setPlayers] = useState([]); // jugadores activos del día
   const [savedPlayers, setSavedPlayers] = useState([]); // lista general
   const [waiting, setWaiting] = useState([]);
@@ -148,17 +148,24 @@ export default function App() {
 
       {/* ✅ LISTA GENERAL */}
       <div>
-        <h3>📋 Lista de jugadores</h3>
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nuevo jugador" />
-        <Button onClick={addToList}>Agregar a lista</Button>
-
-
-        <div>
-          {savedPlayers.map((p, i) => (
-            <div key={i} style={{ display: "inline-flex", alignItems: "center" }}>
-              <Button onClick={() => selectPlayer(p)}>{p}</Button>
-              <button onClick={() => removeSavedPlayer(p)}>❌</button>
+        <h3 style={{ cursor: "pointer" }} onClick={() => setShowList(!showList)}>
+          📋 Lista de jugadores {showList ? "▲" : "▼"}
+        </h3>
+        {showList && (
+          <>
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nuevo jugador" />
+            <Button onClick={addToList}>Agregar a lista</Button>
+            <div>
+              {savedPlayers.map((p, i) => (
+                <div key={i} style={{ display: "inline-flex", alignItems: "center" }}>
+                  <Button onClick={() => selectPlayer(p)}>{p}</Button>
+                  <button onClick={() => removeSavedPlayer(p)}>❌</button>
+                </div>
+              ))}
             </div>
+          </>
+        )}
+      </div>
           ))}
         </div>
       </div>
