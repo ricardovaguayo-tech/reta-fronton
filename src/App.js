@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 
 const Box = ({ children, color }) => (
@@ -165,10 +166,6 @@ export default function App() {
           </>
         )}
       </div>
-          ))}
-        </div>
-      </div>
-
       {/* ✅ JUGADORES DEL DÍA */}
       <div style={{ marginTop: 20 }}>
         <h3>🎯 Juego actual</h3>
