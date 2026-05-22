@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 
 const Box = ({ children, color }) => (
@@ -184,7 +183,9 @@ export default function App() {
             {courts.teamA.map((p, i) => <div key={i} style={{ color: "white" }}>{p}</div>)}
             <div style={{ color: "white" }}>A: {scoreA}</div>
             <Button onClick={() => setScoreA(scoreA + 1)}>+ Punto</Button>
-            <Button onClick={() => winner("A")}>Gana</Button>
+            <Button disabled={scoreA <= scoreB} onClick={() => winner("A")}>
+              Gana
+            </Button>
           </Box>
 
           <Box color="#ef4444">
@@ -192,7 +193,12 @@ export default function App() {
             {courts.teamB.map((p, i) => <div key={i} style={{ color: "white" }}>{p}</div>)}
             <div style={{ color: "white" }}>B: {scoreB}</div>
             <Button onClick={() => setScoreB(scoreB + 1)}>+ Punto</Button>
-            <Button onClick={() => winner("B")}>Gana</Button>
+            <Button
+  disabled={scoreB <= scoreA}
+  onClick={() => winner("B")}
+>
+  Gana
+</Button>
           </Box>
 
         </div>
