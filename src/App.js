@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 
 const Box = ({ children, color }) => (
@@ -78,6 +79,13 @@ export default function App() {
     organize(updated);
   };
 
+  // ✅ NUEVO: eliminar jugador guardado
+  const removeSavedPlayer = (p) => {
+    const updated = savedPlayers.filter(x => x !== p);
+    setSavedPlayers(updated);
+  };
+
+
   const resetScore = () => {
     setScoreA(0);
     setScoreB(0);
@@ -127,14 +135,27 @@ export default function App() {
   return (
     <div style={{ padding: 15 }}>
       <h2>🎾 Reta Frontón</h2>
+
+
       {/* Entrada rápida */}
       <div>
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Jugador" />
         <Button onClick={() => addPlayer(name)}>Agregar</Button>
       </div>
+
+
+      {/* ✅ Jugadores guardados con eliminar */}
       <div>
         {savedPlayers.map((p, i) => (
-          <Button key={i} onClick={() => addPlayer(p)}>{p}</Button>
+          <div key={i} style={{ display: "inline-flex", alignItems: "center" }}>
+            <Button onClick={() => addPlayer(p)}>{p}</Button>
+            <button
+              style={{ marginLeft: "-10px", cursor: "pointer", color: "red" }}
+              onClick={() => removeSavedPlayer(p)}
+            >
+              ❌
+            </button>
+          </div>
         ))}
       </div>
 
@@ -144,22 +165,20 @@ export default function App() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
 
           <Box color="#3b82f6">
-            <strong>Equipo A</strong>
-            {courts.teamA.map((p, i) => <div key={i}>{p}</div>)}
-            <div>A: {scoreA}</div>
+            <strong style={{ color: "white" }}>Equipo A</strong>
+            {courts.teamA.map((p, i) => <div key={i} style={{ color: "white" }}>{p}</div>)}
+            <div style={{ color: "white" }}>A: {scoreA}</div>
             <Button onClick={() => setScoreA(scoreA + 1)}>+ Punto</Button>
             <Button onClick={() => winner("A")}>Gana</Button>
           </Box>
 
-
           <Box color="#ef4444">
-            <strong>Equipo B</strong>
-            {courts.teamB.map((p, i) => <div key={i}>{p}</div>)}
-            <div>B: {scoreB}</div>
+            <strong style={{ color: "white" }}>Equipo B</strong>
+            {courts.teamB.map((p, i) => <div key={i} style={{ color: "white" }}>{p}</div>)}
+            <div style={{ color: "white" }}>B: {scoreB}</div>
             <Button onClick={() => setScoreB(scoreB + 1)}>+ Punto</Button>
             <Button onClick={() => winner("B")}>Gana</Button>
           </Box>
-
 
         </div>
       </div>
@@ -169,6 +188,8 @@ export default function App() {
         <h3>Fila</h3>
         {waiting.map((p, i) => <div key={i}>{p}</div>)}
       </div>
+
+
       {/* Lista */}
       <div style={{ marginTop: 20 }}>
         <h3>Jugadores</h3>
