@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 
 const Box = ({ children, color }) => (
@@ -179,7 +180,10 @@ export default function App() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
 
           <Box color="#3b82f6">
-            <strong style={{ color: "white" }}>Equipo A</strong>
+            <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+              <strong style={{ color: "white" }}>Equipo A</strong>
+              <button onClick={() => setScoreA(0)} style={{ cursor: "pointer" }}>🔄</button>
+            </div>
             {courts.teamA.map((p, i) => <div key={i} style={{ color: "white" }}>{p}</div>)}
             <div style={{ color: "white" }}>A: {scoreA}</div>
             <Button onClick={() => setScoreA(scoreA + 1)}>+ Punto</Button>
@@ -189,7 +193,10 @@ export default function App() {
           </Box>
 
           <Box color="#ef4444">
-            <strong style={{ color: "white" }}>Equipo B</strong>
+            <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+              <strong style={{ color: "white" }}>Equipo B</strong>
+              <button onClick={() => setScoreB(0)} style={{ cursor: "pointer" }}>🔄</button>
+            </div>
             {courts.teamB.map((p, i) => <div key={i} style={{ color: "white" }}>{p}</div>)}
             <div style={{ color: "white" }}>B: {scoreB}</div>
             <Button onClick={() => setScoreB(scoreB + 1)}>+ Punto</Button>
