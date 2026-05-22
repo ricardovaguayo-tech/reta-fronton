@@ -1,4 +1,5 @@
 
+
 import { useState, useEffect } from "react";
 
 const Box = ({ children, color }) => (
@@ -22,8 +23,8 @@ const Button = (props) => (
 );
 
 export default function App() {
-  const [players, setPlayers] = useState([]);
-  const [savedPlayers, setSavedPlayers] = useState([]);
+  const [players, setPlayers] = useState([]); // jugadores activos del día
+  const [savedPlayers, setSavedPlayers] = useState([]); // lista general
   const [waiting, setWaiting] = useState([]);
   const [courts, setCourts] = useState({ teamA: [], teamB: [] });
   const [name, setName] = useState("");
@@ -60,31 +61,40 @@ export default function App() {
     }
   };
 
-  const addPlayer = (p) => {
-    if (!p) return;
-    const updated = [...players, p];
-    setPlayers(updated);
-    organize(updated);
-
-    if (!savedPlayers.includes(p)) {
-      setSavedPlayers([...savedPlayers, p]);
+  // ✅ AGREGAR a lista general
+  const addToList = () => {
+    if (!name) return;
+    if (!savedPlayers.includes(name)) {
+      setSavedPlayers([...savedPlayers, name]);
     }
-
     setName("");
   };
 
+
+  // ✅ seleccionar jugador para el día
+  const selectPlayer = (p) => {
+    if (players.includes(p)) return;
+    const updated = [...players, p];
+    setPlayers(updated);
+    organize(updated);
+  };
+
+  // ✅ quitar del día
   const removePlayer = (p) => {
     const updated = players.filter(x => x !== p);
     setPlayers(updated);
     organize(updated);
   };
 
-  // ✅ NUEVO: eliminar jugador guardado
+  // ✅ eliminar de lista general
   const removeSavedPlayer = (p) => {
     const updated = savedPlayers.filter(x => x !== p);
     setSavedPlayers(updated);
-  };
 
+
+    // también quitar del día si está
+    removePlayer(p);
+  };
 
   const resetScore = () => {
     setScoreA(0);
@@ -97,6 +107,8 @@ export default function App() {
 
     const winnerTeam = side === "A" ? teamA : teamB;
     const loserTeam = side === "A" ? teamB : teamA;
+
+
     let newWaiting = [...waiting, ...loserTeam];
     const newStreak = streak + 1;
 
@@ -105,9 +117,8 @@ export default function App() {
     if (newWaiting.length >= 4) {
       if (newStreak < 2) {
         const challengers = newWaiting.slice(0, 2);
-        const rest = newWaiting.slice(2);
         setCourts({ teamA: winnerTeam, teamB: challengers });
-        setWaiting(rest);
+        setWaiting(newWaiting.slice(2));
         setStreak(newStreak);
       } else {
         const nextTeam = newWaiting.slice(0, 2);
@@ -122,9 +133,8 @@ export default function App() {
       setStreak(0);
     } else if (newWaiting.length >= 2) {
       const challengers = newWaiting.slice(0, 2);
-      const rest = newWaiting.slice(2);
       setCourts({ teamA: winnerTeam, teamB: challengers });
-      setWaiting(rest);
+      setWaiting(newWaiting.slice(2));
       setStreak(newStreak);
     } else {
       setWaiting(newWaiting);
@@ -136,26 +146,28 @@ export default function App() {
     <div style={{ padding: 15 }}>
       <h2>🎾 Reta Frontón</h2>
 
-
-      {/* Entrada rápida */}
+      {/* ✅ LISTA GENERAL */}
       <div>
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Jugador" />
-        <Button onClick={() => addPlayer(name)}>Agregar</Button>
+        <h3>📋 Lista de jugadores</h3>
+        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nuevo jugador" />
+        <Button onClick={addToList}>Agregar a lista</Button>
+
+
+        <div>
+          {savedPlayers.map((p, i) => (
+            <div key={i} style={{ display: "inline-flex", alignItems: "center" }}>
+              <Button onClick={() => selectPlayer(p)}>{p}</Button>
+              <button onClick={() => removeSavedPlayer(p)}>❌</button>
+            </div>
+          ))}
+        </div>
       </div>
 
-
-      {/* ✅ Jugadores guardados con eliminar */}
-      <div>
-        {savedPlayers.map((p, i) => (
-          <div key={i} style={{ display: "inline-flex", alignItems: "center" }}>
-            <Button onClick={() => addPlayer(p)}>{p}</Button>
-            <button
-              style={{ marginLeft: "-10px", cursor: "pointer", color: "red" }}
-              onClick={() => removeSavedPlayer(p)}
-            >
-              ❌
-            </button>
-          </div>
+      {/* ✅ JUGADORES DEL DÍA */}
+      <div style={{ marginTop: 20 }}>
+        <h3>🎯 Juego actual</h3>
+        {players.map((p, i) => (
+          <div key={i}>{p} <button onClick={() => removePlayer(p)}>❌</button></div>
         ))}
       </div>
 
@@ -187,15 +199,6 @@ export default function App() {
       <div style={{ marginTop: 20 }}>
         <h3>Fila</h3>
         {waiting.map((p, i) => <div key={i}>{p}</div>)}
-      </div>
-
-
-      {/* Lista */}
-      <div style={{ marginTop: 20 }}>
-        <h3>Jugadores</h3>
-        {players.map((p, i) => (
-          <div key={i}>{p} <button onClick={() => removePlayer(p)}>❌</button></div>
-        ))}
       </div>
     </div>
   );
