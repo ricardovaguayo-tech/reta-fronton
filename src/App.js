@@ -1,5 +1,4 @@
 
-
 import { useState } from "react";
 
 // Componentes simplificados (sin librerías externas)
@@ -28,7 +27,7 @@ export default function App() {
   const [waiting, setWaiting] = useState([]); // fila
   const [courts, setCourts] = useState({ teamA: [], teamB: [] });
   const [name, setName] = useState("");
-
+  const [streak, setStreak] = useState(0);
   const buildTeams = (list) => {
     if (list.length < 4) return { teamA: [], teamB: [] };
 
@@ -69,25 +68,64 @@ export default function App() {
   const winner = (winnerSide) => {
     const { teamA, teamB } = courts;
     if (teamA.length < 2 || teamB.length < 2) return;
+
+
     const winnerTeam = winnerSide === "A" ? teamA : teamB;
     const loserTeam = winnerSide === "A" ? teamB : teamA;
+
+
     let newWaiting = [...waiting, ...loserTeam];
 
-
+    // Incrementar contador de permanencia
+    const newStreak = streak + 1;
+    // ✅ REGLA PRINCIPAL: si hay 4 esperando (2 parejas completas)
     if (newWaiting.length >= 4) {
-      const nextTeam = newWaiting.slice(0, 2);
-      const nextRival = newWaiting.slice(2, 4);
-      const rest = newWaiting.slice(4);
-      setCourts({ teamA: nextTeam, teamB: nextRival });
-      setWaiting([...rest, ...winnerTeam]);
+
+
+      if (newStreak < 2) {
+        // ✅ aún no cumple 2 juegos → se quedan (rey de cancha temporal)
+        const challengers = newWaiting.slice(0, 2);
+        const rest = newWaiting.slice(2);
+
+
+        setCourts({ teamA: winnerTeam, teamB: challengers });
+        setWaiting(rest);
+        setStreak(newStreak);
+
+
+      } else {
+        // ✅ ya cumplieron 2 juegos → salen aunque ganen o pierdan
+        const nextTeam = newWaiting.slice(0, 2);
+        const nextRival = newWaiting.slice(2, 4);
+        const rest = newWaiting.slice(4);
+
+
+        setCourts({ teamA: nextTeam, teamB: nextRival });
+        setWaiting([...rest, ...winnerTeam]);
+        setStreak(0);
+      }
+
+
+    } else if (newWaiting.length === 3) {
+      // ✅ caso especial: 3 en espera → reorganizar todos
+      const allPlayers = [...winnerTeam, ...newWaiting];
+      organize(allPlayers);
+      setStreak(0);
+
+
     } else if (newWaiting.length >= 2) {
+      // ✅ solo 1 pareja esperando → modo rey clásico
       const challengers = newWaiting.slice(0, 2);
       const rest = newWaiting.slice(2);
 
       setCourts({ teamA: winnerTeam, teamB: challengers });
       setWaiting(rest);
+      setStreak(newStreak);
+
+
     } else {
       setWaiting(newWaiting);
+      setStreak(newStreak);
     }
   };
 
